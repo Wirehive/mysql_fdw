@@ -218,6 +218,7 @@ mysql_load_library(void)
 	_mysql_get_host_info = dlsym(mysql_dll_handle, "mysql_get_host_info");
 	_mysql_get_server_info = dlsym(mysql_dll_handle, "mysql_get_server_info");
 	_mysql_get_proto_info = dlsym(mysql_dll_handle, "mysql_get_proto_info");
+	_mysql_insert_id = dlsym(mysql_dll_handle, "mysql_insert_id");
 	
 	if (_mysql_stmt_bind_param == NULL ||
 		_mysql_stmt_bind_result == NULL ||
@@ -248,7 +249,8 @@ mysql_load_library(void)
 		_mysql_num_rows == NULL ||
 		_mysql_get_host_info == NULL ||
 		_mysql_get_server_info == NULL ||
-		_mysql_get_proto_info == NULL)
+		_mysql_get_proto_info == NULL ||
+		_mysql_insert_id == NULL)
 			return false;
 	return true;
 }
@@ -1251,7 +1253,7 @@ mysqlPlanForeignModify(PlannerInfo *root,
 	}
 
 	if (plan->returningLists)
-		elog(ERROR, "RETURNING is not supported by this FDW");
+		elog(WARNING, "RETURNING is a ugly hack (always supplied slot with autonumber filled in) in this FDW");
 
 	heap_close(rel, NoLock);
 	return list_make2(makeString(sql.data), targetAttrs);
@@ -1482,6 +1484,10 @@ mysqlExecForeignInsert(EState *estate,
 	}
 	MemoryContextSwitchTo(oldcontext);
 	MemoryContextReset(fmstate->temp_cxt);
+
+	slot->tts_isnull[0] = false;
+	slot->tts_values[0] = _mysql_insert_id(fmstate->conn);
+
 	return slot;
 }
 

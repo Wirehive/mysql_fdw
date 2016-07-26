@@ -158,6 +158,7 @@ MYSQL	*((*_mysql_real_connect)(MYSQL *mysql,
 const char *((*_mysql_get_host_info)(MYSQL *mysql));
 const char *((*_mysql_get_server_info)(MYSQL *mysql));
 int ((*_mysql_get_proto_info)(MYSQL *mysql));
+int ((*_mysql_insert_id)(MYSQL *mysql));
 
 unsigned int ((*_mysql_stmt_errno)(MYSQL_STMT *stmt));
 unsigned int ((*_mysql_errno)(MYSQL *mysql));
