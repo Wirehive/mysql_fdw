@@ -63,6 +63,7 @@ static struct MySQLFdwOption valid_options[] =
 	/* Connection options */
 	{ "host",           ForeignServerRelationId },
 	{ "port",           ForeignServerRelationId },
+	{ "socket",         ForeignServerRelationId },
 	{ "init_command",   ForeignServerRelationId },
 	{ "username",       UserMappingRelationId },
 	{ "password",       UserMappingRelationId },
@@ -206,6 +207,9 @@ mysql_get_options(Oid foreignoid)
 
 		if (strcmp(def->defname, "port") == 0)
 			opt->svr_port = atoi(defGetString(def));
+
+		if (strcmp(def->defname, "socket") == 0)
+			opt->svr_socket = defGetString(def);
 
 		if (strcmp(def->defname, "username") == 0)
 			opt->svr_username = defGetString(def);

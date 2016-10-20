@@ -100,6 +100,7 @@ mysql_get_connection(ForeignServer *server, UserMapping *user, mysql_opt *opt)
 			opt->svr_password,
 			opt->svr_database,
 			opt->svr_port,
+			opt->svr_socket,
 			opt->svr_sa,
 			opt->svr_init_command,
 			opt->ssl_key,
@@ -176,6 +177,7 @@ mysql_connect(
 	char *svr_password,
 	char *svr_database,
 	int svr_port,
+    char *svr_socket,
 	bool svr_sa,
 	char *svr_init_command,
 	char *ssl_key,
@@ -206,7 +208,7 @@ mysql_connect(
 
 	_mysql_ssl_set(conn, ssl_key, ssl_cert, ssl_ca, ssl_capath, ssl_cipher);
    
-	if (!_mysql_real_connect(conn, svr_address, svr_username, svr_password, svr_database, svr_port, NULL, 0))
+	if (!_mysql_real_connect(conn, svr_address, svr_username, svr_password, svr_database, svr_port, svr_socket, 0))
 		ereport(ERROR,
 			(errcode(ERRCODE_FDW_UNABLE_TO_ESTABLISH_CONNECTION),
 			errmsg("failed to connect to MySQL: %s", _mysql_error(conn))
